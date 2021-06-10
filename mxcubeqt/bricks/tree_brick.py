@@ -425,16 +425,15 @@ class TreeBrick(BaseWidget):
     @qt_import.pyqtSlot(bool)
     def logged_in(self, logged_in):
         """
-        Connected to the signal loggedIn of ProposalBrick2.
+        Connected to the signal loggedIn of ProposalBrick.
         The signal is emitted when a user was succesfully logged in.
         At first free-pin mode is created
         Then it tries to initialize two sample changers and create
         two associated queue models.
         """
-
+        logging.getLogger("HWR").info('tree_brick logged_in')
         self.is_logged_in = logged_in
         # self.enable_collect(logged_in)
-
         # if not logged_in:
         if True:
             self.dc_tree_widget.sample_mount_method = 0
@@ -445,6 +444,7 @@ class TreeBrick(BaseWidget):
                 HWR.beamline.sample_changer is not None
                 and HWR.beamline.diffractometer.use_sample_changer()
             ):
+                logging.getLogger("HWR").info('tree_brick logged_in 1')
                 sc_basket_content, sc_sample_content = self.get_sc_content()
                 if sc_basket_content and sc_sample_content:
                     sc_basket_list, sc_sample_list = self.dc_tree_widget.samples_from_sc_content(
@@ -505,7 +505,7 @@ class TreeBrick(BaseWidget):
         #    self.dc_tree_widget.set_sample_pin_icon()
         # self.dc_tree_widget.scroll_to_item()
         self.dc_tree_widget.update_basket_selection()
-
+        
     def enable_collect(self, state):
         """
         Enables the collect controls.
