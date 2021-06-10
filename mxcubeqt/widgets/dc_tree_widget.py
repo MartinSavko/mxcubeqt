@@ -88,7 +88,7 @@ class DataCollectTree(qt_import.QWidget):
         self.close_kappa = False
         self.show_sc_during_mount = True
         self.show_sc_during_mount = True
-
+        self.set_sample_pin_icon_last_called = 0.
         # Signals ------------------------------------------------------------
 
         # Slots ---------------------------------------------------------------
@@ -583,6 +583,7 @@ class DataCollectTree(qt_import.QWidget):
 
             items[0].setText(1, "")
             items[0].setOn(False)
+            print('about to set mounted_style to False')
             items[0].set_mounted_style(False)
         self.enable_collect(True)
         self.tree_brick.enable_widgets.emit(True)
@@ -778,14 +779,14 @@ class DataCollectTree(qt_import.QWidget):
 
             if HWR.beamline.diffractometer.in_plate_mode():
                 try:
-                    loaded_sample = HWR.beamline.plate_manipulator.getLoadedSample()
-                    loaded_sample_loc = loaded_sample.getCoords()
+                    loaded_sample = HWR.beamline.plate_manipulator.get_loaded_sample()
+                    loaded_sample_loc = loaded_sample.get_coords()
                 except BaseException:
                     pass
             else:
                 try:
-                    loaded_sample = HWR.beamline.sample_changer.getLoadedSample()
-                    loaded_sample_loc = loaded_sample.getCoords()
+                    loaded_sample = HWR.beamline.sample_changer.get_loaded_sample()
+                    loaded_sample_loc = loaded_sample.get_coords()
                 except BaseException:
                     pass
             it = qt_import.QTreeWidgetItemIterator(self.sample_tree_widget)
@@ -1305,6 +1306,7 @@ class DataCollectTree(qt_import.QWidget):
 
     def populate_free_pin(self, sample=None):
         """Populates manualy mounted sample"""
+        logging.getLogger('HWR').debug('populate_free_pin')
         HWR.beamline.queue_model.clear_model('free-pin')
         HWR.beamline.queue_model.select_model('free-pin')
         if sample is None:
@@ -1322,7 +1324,7 @@ class DataCollectTree(qt_import.QWidget):
             mode_str = "ispyb"
         else:
             mode_str = "plate"
-
+        logging.getLogger('HWR').debug('populate_tree_widget')
         HWR.beamline.queue_manager.clear()
         HWR.beamline.queue_model.clear_model(mode_str)
         self.sample_tree_widget.clear()
@@ -1338,21 +1340,49 @@ class DataCollectTree(qt_import.QWidget):
                     sample.set_enabled(False)
         self.set_sample_pin_icon()
 
-    def set_sample_pin_icon(self):
+    def set_sample_pin_icon(self, min_delta=0.05):
         """Updates sample icon"""
+        
+        log = logging.getLogger('HWR')
+        log.debug('set_sample_pin_icon start')
+        
+        current_time = time.time()
+        _start = current_time
+        if self.samples_initialized != True:
+            log.debug('samples not initialized')
+            return
+        delta = current_time - self.set_sample_pin_icon_last_called
+        if delta > min_delta:
+            self.set_sample_pin_icon_last_called = current_time
+            log.debug('set_sample_pin_icon called not too soon after the previous call (%.4f seconds), continuing' % (delta))
+        else:
+            log.debug('set_sample_pin_icon called too soon after the previous call (%.4f seconds), exiting' % (delta))
+            log.debug('set_sample_pin_icon took %.6f seconds' % (time.time() - _start))
+            return 
         it = qt_import.QTreeWidgetItemIterator(self.sample_tree_widget)
         item = it.value()
-
+        
+        try:
+            location = HWR.beamline.sample_changer.get_loaded_sample().get_coords()
+        except:
+            location = None
+        log.debug('location %s' % str(location))
         while item:
-            if self.is_mounted_sample_item(item):
-                item.setSelected(True)
-                item.set_mounted_style(True)
-                # self.sample_tree_widget.scrollTo(self.sample_tree_widget.\
-                #     indexFromItem(item))
-            elif isinstance(item, queue_item.SampleQueueItem):
-                item.set_mounted_style(False)
-
             if isinstance(item, queue_item.SampleQueueItem):
+                message = 'item %s, isinstanceitem, queue_item.SampleQueueItem) %s, item.get_model().location %s' % (item, isinstance(item, queue_item.SampleQueueItem), item.get_model().location)
+                if item.get_model().location == location:
+                    log.debug(message)
+                    log.debug('1')
+                    item.setSelected(True)
+                    item.set_mounted_style(True)
+                elif self.is_mounted_sample_item(item):
+                    log.debug(message)
+                    log.debug('2')
+                    item.setSelected(True)
+                    item.set_mounted_style(True)
+                else:
+                    item.set_mounted_style(False)
+
                 if item.get_model().lims_location != (None, None):
                     # if item.get_model().diffraction_plan is not None:
                     #    item.setIcon(0, self.ispyb_diff_plan_icon)
@@ -1379,7 +1409,9 @@ class DataCollectTree(qt_import.QWidget):
 
             it += 1
             item = it.value()
-
+        log.debug('set_sample_pin_icon took %.6f seconds' % (time.time() - _start))
+        log.debug('set_sample_pin_icon success')
+        
     def update_basket_selection(self):
         it = qt_import.QTreeWidgetItemIterator(self.sample_tree_widget)
         item = it.value()
@@ -1421,6 +1453,7 @@ class DataCollectTree(qt_import.QWidget):
 
     def select_last_added_item(self):
         """Selects last added item"""
+        logging.getLogger('HWR').debug('select_last_added_item')
         if self.last_added_item:
             self.sample_tree_widget.clearSelection()
             self.last_added_item.setSelected(True)
@@ -1606,6 +1639,7 @@ class DataCollectTree(qt_import.QWidget):
 
     def load_queue_from_file(self):
         """Loads queue from file"""
+        logging.getLogger('HWR').debug('load_queue_from_file')
         filename = str(qt_import.QFileDialog.getOpenFileName(self,
                                                             "Open file", os.environ["HOME"],
                                                             "Item file (*.dat)", "Choose queue file to open"))
