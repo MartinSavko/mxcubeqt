@@ -721,7 +721,8 @@ class ProposalBrick(BaseWidget):
                 "user", "%s@%s" % (user_name, HWR.beamline.lims.beamline_name)
             )
             BaseWidget.set_status_info("ispyb", "ready")
-
+        self.loggedIn.emit(True)
+        
     def select_todays_proposal(self, proposal_list):
         """Selects a proposal that is assigned for current day
            If no session found then returns first proposal
