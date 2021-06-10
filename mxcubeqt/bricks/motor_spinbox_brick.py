@@ -200,7 +200,7 @@ class MotorSpinboxBrick(BaseWidget):
 
     def step_changed(self, step):
         colors.set_widget_color(
-            self.step_combo.lineEdit(), qt_import.Qt.white, qt_import.QPalette.Base
+            self.step_combo.lineEdit(), colors.LIGHT_GREEN, qt_import.QPalette.Base
         )
 
     def toggle_enabled(self):
@@ -347,7 +347,7 @@ class MotorSpinboxBrick(BaseWidget):
     def update_history(self, pos):
         pos = str(pos)
         if pos not in self.position_history:
-            if len(self.position_history) == MotorSpinBoxBrick.MAX_HISTORY:
+            if len(self.position_history) == self.MAX_HISTORY:
                 del self.position_history[-1]
             self.position_history.insert(0, pos)
 
@@ -423,8 +423,6 @@ class MotorSpinboxBrick(BaseWidget):
             self.step_combo.setEnabled(False)
             self.set_editing(False)
         elif state in (
-            #self.motor_hwobj.STATES.LOWLIMIT,
-            #self.motor_hwobj.STATES.HIGHLIMIT,
             self.motor_hwobj.STATES.READY,
         ):
             self.position_spinbox.setEnabled(True)
@@ -442,7 +440,6 @@ class MotorSpinboxBrick(BaseWidget):
 
     def position_value_edited(self, value):
         self.set_editing(True)
-        self.editing = True
 
     def set_editing(self, editing):
 
@@ -451,13 +448,13 @@ class MotorSpinboxBrick(BaseWidget):
         if self.editing:
             colors.set_widget_color(
                 self.position_spinbox.lineEdit(),
-                qt_import.QColor(255, 165, 0),
+                colors.LINE_EDIT_CHANGED,
                 qt_import.QPalette.Base,
             )
         else:
             # restore last position from motor
             self.position_changed(self.motor_hwobj.get_value())
-
+            
     def set_tool_tip(self, name=None, state=None, limits=None):
         states = (
             "NOTINITIALIZED",
@@ -469,7 +466,7 @@ class MotorSpinboxBrick(BaseWidget):
         )
         if name is None:
             try:
-                name = self.motor_hwobj.motor_name
+                name = self.motor_hwobj.name() #motor_name
             except BaseException:
                 name = self["mnemonic"]
 
@@ -487,8 +484,8 @@ class MotorSpinboxBrick(BaseWidget):
                 state = self.motor_hwobj.STATES.FAULT
 
             try:
-                if limits is None and self.motor_hwobj.is_ready():
-                    limits = self.motor_hwobj.get_limits()
+                #if limits is None and self.motor_hwobj.is_ready():
+                limits = self.motor_hwobj.get_limits()
             except BaseException:
                 logging.getLogger("user_level_log").exception(
                     "%s: could not get motor limits", self.objectName()
@@ -594,11 +591,11 @@ class MotorSpinboxBrick(BaseWidget):
 
         # get motor position and set to brick
         self.position_changed(self.motor_hwobj.get_value())
+        self.state_changed(self.motor_hwobj.get_state())
         self.position_history = []
         self.update_gui()
-        # self['label'] = self['label']
-        # self['defaultStep']=self['defaultStep']
-
+       
+        
     def position_slider_double_value_changed(self, value):
         """Sets motor postion based on the slider value"""
         self.set_editing(False)   
