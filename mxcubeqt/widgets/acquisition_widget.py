@@ -369,7 +369,7 @@ class AcquisitionWidget(qt_import.QWidget):
 
     def init_limits(self):
         limits_dict = HWR.beamline.acquisition_limit_values
-
+        print('acquisition_widget, limits_dict', limits_dict)
         tpl = limits_dict.get("osc_range")
         if tpl:
             self.osc_start_validator.setRange(tpl[0], tpl[1], 4)
@@ -415,6 +415,7 @@ class AcquisitionWidget(qt_import.QWidget):
         )
 
         tpl = limits_dict.get("exposure_time")
+        print('acquisition_widget exposure_time limits tuple', tpl)
         if tpl:
             self.exp_time_validator.setRange(tpl[0], tpl[1], 6)
 

@@ -158,13 +158,13 @@ class AcquisitionWidgetSimple(qt_import.QWidget):
 
     def update_num_images(self, index=None, num_images=None):
         if index is not None:
-            if index is 0:
+            if index == 0:
                 self._acquisition_parameters.num_images = 1
                 self._path_template.num_files = 1
-            elif index is 1:
+            elif index == 1:
                 self._acquisition_parameters.num_images = 2
                 self._path_template.num_files = 2
-            elif index is 2:
+            elif index == 2:
                 self._acquisition_parameters.num_images = 4
                 self._path_template.num_files = 4
 
@@ -172,11 +172,11 @@ class AcquisitionWidgetSimple(qt_import.QWidget):
             if self.acq_widget_layout.num_images_cbox.count() > 3:
                 self.acq_widget_layout.num_images_cbox.removeItem(4)
 
-            if num_images is 1:
+            if num_images == 1:
                 self.acq_widget_layout.num_images_cbox.setCurrentIndex(0)
-            elif num_images is 2:
+            elif num_images == 2:
                 self.acq_widget_layout.num_images_cbox.setCurrentIndex(1)
-            elif num_images is 4:
+            elif num_images == 4:
                 self.acq_widget_layout.num_images_cbox.setCurrentIndex(2)
             else:
                 self.acq_widget_layout.num_images_cbox.addItem(str(num_images))
@@ -198,7 +198,7 @@ class AcquisitionWidgetSimple(qt_import.QWidget):
 
     def init_limits(self):
         limits_dict = HWR.beamline.acquisition_limit_values
-
+        print('acquisition_widget_simple, limits_dict', limits_dict)
         tpl = limits_dict.get("osc_range")
         if tpl:
             self.osc_start_validator.setRange(tpl[0], tpl[1], 4)
@@ -236,6 +236,8 @@ class AcquisitionWidgetSimple(qt_import.QWidget):
         )
 
         tpl = limits_dict.get("exposure_time")
+        print('acquisition_widget_simple exposure_time limits tuple', tpl)
+
         if tpl:
             self.exp_time_validator.setRange(tpl[0], tpl[1], 6)
         self._acquisition_mib.bind_value_update(
@@ -308,10 +310,10 @@ class AcquisitionWidgetSimple(qt_import.QWidget):
 
     def update_detector_exp_time_limits(self, limits):
         if limits:
-            self.exp_time_validator.setBottom(limits[0])
-            self.exp_time_validator.setTop(limits[1])
+            self.exp_time_validator.setRange(limits[0], limits[1], 6)
             self.acq_widget_layout.exp_time_ledit.setToolTip(
-                "Exposure time limits %0.3f : %0.3f" % (limits[0], limits[1])
+                "Exposure time limits %0.6f s : %0.1f s\n" % (limits[0], limits[1])
+                + "6 digits precision."
             )
             self._acquisition_mib.validate_all()
 
