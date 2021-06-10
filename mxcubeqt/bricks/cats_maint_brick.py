@@ -153,8 +153,9 @@ class CatsMaintBrick(BaseWidget):
         self.expert_mode = bool(expert)
         self.update_buttons()
 
-    def update_state(self, state):
+    def update_state(self, state, add_on=None):
         logging.getLogger().debug("CATS update state : " + str(state))
+        logging.getLogger().debug("CATS update add_on : " + str(add_on))
         if state != self.state:
             self.state = state
             self.update_buttons()
