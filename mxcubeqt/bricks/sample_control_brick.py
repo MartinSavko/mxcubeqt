@@ -56,42 +56,13 @@ class SampleControlBrick(BaseWidget):
         # Slots ---------------------------------------------------------------
 
         # Graphic elements ----------------------------------------------------
-        self.centre_button = DuoStateButton(self, "Centre")
-        self.centre_button.set_icons("VCRPlay2", "Delete")
-        self.accept_button = MonoStateButton(self, "Save", "ThumbUp")
-        self.standard_color = self.accept_button.palette().color(
-            qt_import.QPalette.Window
-        )
-        self.reject_button = MonoStateButton(self, "Reject", "ThumbDown")
-        self.reject_button.hide()
-        self.create_line_button = MonoStateButton(self, "Line", "Line")
-        self.draw_grid_button = MonoStateButton(self, "Grid", "Grid")
-        self.auto_focus_button = MonoStateButton(self, "Focus", "Eyeball")
-        self.snapshot_button = MonoStateButton(self, "Snapshot", "Camera")
-        self.refresh_camera_button = MonoStateButton(self, "Refresh", "Refresh")
-        self.visual_align_button = MonoStateButton(self, "Align", "Align")
-        self.select_all_button = MonoStateButton(self, "Select all", "Check")
-        self.clear_all_button = MonoStateButton(self, "Clear all", "Delete")
-        self.auto_center_button = MonoStateButton(self, "Auto", "VCRPlay2")
-        self.auto_center_button.setText("Auto")
-        self.realign_button = MonoStateButton(self, "Realign beam", "QuickRealign")
+        self.create_graphics_elements()
 
         # Layout --------------------------------------------------------------
         _main_layout = self.create_layout()
         
         # Qt signal/slot connections ------------------------------------------
-        self.centre_button.commandExecuteSignal.connect(self.centre_button_clicked)
-        self.accept_button.clicked.connect(self.accept_clicked)
-        self.reject_button.clicked.connect(self.reject_clicked)
-        self.create_line_button.clicked.connect(create_line_clicked)
-        self.draw_grid_button.clicked.connect(draw_grid_clicked)
-        self.auto_focus_button.clicked.connect(auto_focus_clicked)
-        self.snapshot_button.clicked.connect(self.save_snapshot_clicked)
-        self.refresh_camera_button.clicked.connect(refresh_camera_clicked)
-        self.visual_align_button.clicked.connect(visual_align_clicked)
-        self.select_all_button.clicked.connect(select_all_clicked)
-        self.clear_all_button.clicked.connect(clear_all_clicked)
-        self.auto_center_button.clicked.connect(auto_center_clicked)
+        self.create_connections()
 
         # Other ---------------------------------------------------------------
         self.centre_button.setToolTip("3 click centring (Ctrl+1)")
@@ -119,6 +90,27 @@ class SampleControlBrick(BaseWidget):
             self.diffractometer_phase_changed,
         )
 
+    def create_graphics_elements(self):
+        self.centre_button = DuoStateButton(self, "Centre")
+        self.centre_button.set_icons("VCRPlay2", "Delete")
+        self.accept_button = MonoStateButton(self, "Save", "ThumbUp")
+        self.standard_color = self.accept_button.palette().color(
+            qt_import.QPalette.Window
+        )
+        self.reject_button = MonoStateButton(self, "Reject", "ThumbDown")
+        self.reject_button.hide()
+        self.create_line_button = MonoStateButton(self, "Line", "Line")
+        self.draw_grid_button = MonoStateButton(self, "Grid", "Grid")
+        self.auto_focus_button = MonoStateButton(self, "Focus", "Eyeball")
+        self.snapshot_button = MonoStateButton(self, "Snapshot", "Camera")
+        self.refresh_camera_button = MonoStateButton(self, "Refresh", "Refresh")
+        self.visual_align_button = MonoStateButton(self, "Align", "Align")
+        self.select_all_button = MonoStateButton(self, "Select all", "Check")
+        self.clear_all_button = MonoStateButton(self, "Clear all", "Delete")
+        self.auto_center_button = MonoStateButton(self, "Auto", "VCRPlay2")
+        self.auto_center_button.setText("Auto")
+        self.realign_button = MonoStateButton(self, "Realign beam", "QuickRealign")
+
     def create_layout(self):
         _main_layout = qt_import.QVBoxLayout(self)
         _main_layout.addWidget(self.centre_button)
@@ -139,6 +131,20 @@ class SampleControlBrick(BaseWidget):
         _main_layout.setContentsMargins(0, 0, 0, 0)
         return _main_layout
     
+    def create_connections(self):
+        self.centre_button.commandExecuteSignal.connect(self.centre_button_clicked)
+        self.accept_button.clicked.connect(self.accept_clicked)
+        self.reject_button.clicked.connect(self.reject_clicked)
+        self.create_line_button.clicked.connect(create_line_clicked)
+        self.draw_grid_button.clicked.connect(draw_grid_clicked)
+        self.auto_focus_button.clicked.connect(auto_focus_clicked)
+        self.snapshot_button.clicked.connect(self.save_snapshot_clicked)
+        self.refresh_camera_button.clicked.connect(refresh_camera_clicked)
+        self.visual_align_button.clicked.connect(visual_align_clicked)
+        self.select_all_button.clicked.connect(select_all_clicked)
+        self.clear_all_button.clicked.connect(clear_all_clicked)
+        self.auto_center_button.clicked.connect(auto_center_clicked)
+        
     def property_changed(self, property_name, old_value, new_value):
         if property_name == "enableAutoFocus":
             self.auto_focus_button.setVisible(new_value)
