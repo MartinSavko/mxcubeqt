@@ -153,7 +153,7 @@ class TreeBrick(BaseWidget):
         self.queue_sync_action = None
 
         self.sample_changer_widget = qt_import.load_ui_file(
-            "sample_changer_widget_layout.ui"
+            "soleil/sample_changer_widget_layout.ui"
         )
 
         # self.refresh_pixmap = icons.load("Refresh2.png")
@@ -184,6 +184,12 @@ class TreeBrick(BaseWidget):
         )
         self.sample_changer_widget.centring_cbox.activated.connect(
             self.dc_tree_widget.set_centring_method
+        )
+        self.sample_changer_widget.nclicks_ledit.editingFinished.connect(
+             self.set_nclicks
+        )
+        self.sample_changer_widget.step_ledit.textChanged.connect(
+             self.set_step
         )
         self.sample_changer_widget.synch_ispyb_button.clicked.connect(
             self.refresh_sample_list
@@ -457,6 +463,14 @@ class TreeBrick(BaseWidget):
                         self.dc_tree_widget.sample_mount_method,
                     )
                     self.sample_changer_widget.details_button.setText("Show SC-details")
+
+                # Specifically to intialise emulation samples in mock mode
+                # Very crude and hacky, but avoids changes in production mode, at least
+                if (
+                    HWR.beamline.lims is not None
+                    and  "Mock" in HWR.beamline.lims.__class__.__name__
+                ):
+                    self.refresh_sample_list()
 
             if (
                     HWR.beamline.plate_manipulator is not None
@@ -1266,3 +1280,27 @@ class TreeBrick(BaseWidget):
         """Sets condition to defined state"""
         if self.state_machine_hwobj is not None:
             self.state_machine_hwobj.condition_changed(condition_name, value)
+
+    def set_nclicks(self, nclicks=None):
+        if nclicks is None:
+            nclicks = self.sample_changer_widget.nclicks_ledit.text()
+        logging.getLogger().info('tree_brick set_nclicks %s' % nclicks)
+        self.dc_tree_widget.set_nclicks(nclicks)
+        if float(nclicks) < 3:
+            logging.getLogger('user_level_log').error('Number of clicks must be 3 or more')
+            self.sample_changer_widget.nclicks_ledit.setText('3')
+            nclicks = 3
+        else:
+            self.sample_changer_widget.nclicks_ledit.setText(str(nclicks))
+        try:
+            step = (360./(float(nclicks)))
+            logging.getLogger().info('tree_brick step %s' % step)
+            self.sample_changer_widget.step_ledit.setText('%.1f' % (step))
+        except ValueError:
+            pass
+    
+    def get_nclicks(self):
+        return self.sample_changer_widget.nclicks_ledit.text()
+    
+    def set_step(self, step):
+        self.dc_tree_widget.set_step(step)
