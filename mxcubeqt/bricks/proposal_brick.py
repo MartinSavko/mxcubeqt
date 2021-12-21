@@ -453,17 +453,17 @@ class ProposalBrick(BaseWidget):
         self.setEnabled(True)
 
     def set_ispyb_down(self):
-        msg_dialog = qt_import.QMessageBox(
-            "Register user",
-            "Couldn't contact "
+        icon = qt_import.QMessageBox.Warning
+        title = "Register user"
+        message = "Couldn't contact "\
             + "the ISPyB database server: you've been logged as the local user.\n"
-            + "Your experiments' information will not be stored in ISPyB!",
-            qt_import.QMessageBox.Warning,
-            qt_import.QMessageBox.Ok,
-            qt_import.QMessageBox.NoButton,
-            qt_import.QMessageBox.NoButton,
-            self,
-        )
+        informative_text = "Your experiments' information will not be stored in ISPyB!"
+        msg_dialog = qt_import.QMessageBox(self)
+        
+        msg_dialog.setIcon(icon)
+        msg_dialog.setWindowTitle(title)
+        msg_dialog.setText(message)
+        msg_dialog.setInformativeText(informative_text)
         s = self.font().pointSize()
         f = msg_dialog.font()
         f.setPointSize(s)
