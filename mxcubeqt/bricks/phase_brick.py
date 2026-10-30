@@ -73,12 +73,15 @@ class PhaseBrick(BaseWidget):
 
         self.init_phase_list()
 
-        self.connect(
-            HWR.beamline.diffractometer.nstate_equipment_hwobj_dict["phase"], "diffractometerPhaseChanged", self.phase_changed
-        )
-        self.connect(
-            HWR.beamline.diffractometer.nstate_equipment_hwobj_dict["phase"], "diffractometerPhaseStateChanged", self.phase_state_changed
-        )
+        try:
+            self.connect(
+                HWR.beamline.diffractometer.nstate_equipment_hwobj_dict["phase"], "diffractometerPhaseChanged", self.phase_changed
+            )
+            self.connect(
+                HWR.beamline.diffractometer.nstate_equipment_hwobj_dict["phase"], "diffractometerPhaseStateChanged", self.phase_state_changed
+            )
+        except KeyError:
+            logging.getLogger("GUI").info("DiffractometerPhase not configured, please check")
         self.phase_changed()
 
 
