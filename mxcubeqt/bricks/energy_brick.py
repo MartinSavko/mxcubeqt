@@ -51,7 +51,7 @@ class EnergyBrick(BaseWidget):
         # Graphic elements ----------------------------------------------------
         self.group_box = qt_import.QGroupBox("Energy", self)
         current_label = qt_import.QLabel("Current:", self.group_box)
-        current_label.setFixedWidth(75)
+        current_label.setFixedWidth(50)
         
         self.energy_ledit = qt_import.QLineEdit(self.group_box)
         self.energy_ledit.setReadOnly(True)
@@ -77,7 +77,7 @@ class EnergyBrick(BaseWidget):
         self.beam_align_cbox = qt_import.QCheckBox(
             "Center beam after energy change", self
         )
-
+        self.beam_align_cbox.setVisible(False)
         # Layout --------------------------------------------------------------
         _new_value_widget_hlayout = qt_import.QHBoxLayout(self.new_value_widget)
         _new_value_widget_hlayout.addWidget(self.new_value_ledit)
@@ -112,7 +112,7 @@ class EnergyBrick(BaseWidget):
         self.units_combobox.activated.connect(self.units_changed)
         self.stop_button.clicked.connect(self.stop_clicked)
         self.beam_align_cbox.stateChanged.connect(self.do_beam_align_changed)
-
+        
         # Other ---------------------------------------------------------------
         # self.group_box.setCheckable(True)
         # self.group_box.setChecked(True)
