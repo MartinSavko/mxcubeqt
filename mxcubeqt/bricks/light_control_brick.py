@@ -140,12 +140,12 @@ class LightControlBrick(MotorSpinboxBrick):
                 self, property_name, old_value, new_value
             )
             if self.motor_hwobj is not None:
+                self["delta"] = 1.0
                 if self.motor_hwobj.is_ready():
                     limits = self.motor_hwobj.get_limits()
-                    motor_range = float(limits[1] - limits[0])
-                    self["delta"] = str(motor_range / 10.0)
-                else:
-                    self["delta"] = 1.0
+                    if limits[0] is not None and limits[1] is not None:  
+                        motor_range = float(limits[1] - limits[0])
+                        self["delta"] = str(motor_range / 10.0)
         else:
             MotorSpinboxBrick.property_changed(
                 self, property_name, old_value, new_value
