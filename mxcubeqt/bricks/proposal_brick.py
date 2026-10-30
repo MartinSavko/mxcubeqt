@@ -107,10 +107,10 @@ class ProposalBrick(BaseWidget):
         self.code_label = qt_import.QLabel("  Code: ", self.login_as_proposal_widget)
         self.proposal_type_combox = qt_import.QComboBox(self.login_as_proposal_widget)
         self.proposal_type_combox.setEditable(True)
-        self.proposal_type_combox.setFixedWidth(60)
-        dash_label = qt_import.QLabel(" - ", self.login_as_proposal_widget)
+        self.proposal_type_combox.setFixedWidth(10)
+        self.dash_label = qt_import.QLabel(" - ", self.login_as_proposal_widget)
         self.proposal_number_ledit = qt_import.QLineEdit(self.login_as_proposal_widget)
-        self.proposal_number_ledit.setFixedWidth(60)
+        self.proposal_number_ledit.setFixedWidth(50)
         self.password_label = qt_import.QLabel("   Password: ", self.login_as_proposal_widget)
         self.proposal_password_ledit = qt_import.QLineEdit(self.login_as_proposal_widget)
         self.proposal_password_ledit.setEchoMode(qt_import.QLineEdit.Password)
@@ -142,6 +142,38 @@ class ProposalBrick(BaseWidget):
         self.saved_group = True
 
         # Layout --------------------------------------------------------------
+        self.set_user_group_widget_hlayout()
+        
+        self.set_login_as_proposal_widget_layout()
+        
+        self.set_login_as_user_widget_layout()
+        
+        self.set_main_gboxlayout()
+        
+        self.set_main_vlayout()
+        
+        self.user_group_widget.hide()
+        # SizePolicies --------------------------------------------------------
+        #  self.user_group_ledit
+
+        # Qt signal/slot connections ------------------------------------------
+        self.proposal_password_ledit.returnPressed.connect(self.login)
+        self.login_button.clicked.connect(self.login)
+        self.logout_button.clicked.connect(self.logout_clicked)
+        self.proposal_combo.activated.connect(self.proposal_combo_activated)
+        self.user_group_save_button.clicked.connect(self.save_group)
+        self.user_group_ledit.returnPressed.connect(self.save_group)
+        self.user_group_ledit.textChanged.connect(self.user_group_changed)
+
+        # Other ---------------------------------------------------------------
+        colors.set_widget_color(
+            self.proposal_number_ledit, colors.LIGHT_RED, qt_import.QPalette.Base
+        )
+        colors.set_widget_color(
+            self.proposal_password_ledit, colors.LIGHT_RED, qt_import.QPalette.Base
+        )
+       
+    def set_user_group_widget_hlayout(self):
         _user_group_widget_hlayout = qt_import.QHBoxLayout(self.user_group_widget)
         _user_group_widget_hlayout.setSpacing(2)
         # _user_group_widget_hlayout.addWidget(self.title_label)
@@ -149,14 +181,14 @@ class ProposalBrick(BaseWidget):
         _user_group_widget_hlayout.addWidget(self.user_group_ledit)
         _user_group_widget_hlayout.addWidget(self.user_group_save_button)
         _user_group_widget_hlayout.setContentsMargins(0, 0, 0, 0)
-        self.user_group_widget.hide()
 
+    def set_login_as_proposal_widget_layout(self):
         _login_as_proposal_widget_layout = qt_import.QHBoxLayout(
             self.login_as_proposal_widget
         )
         _login_as_proposal_widget_layout.addWidget(self.code_label)
         _login_as_proposal_widget_layout.addWidget(self.proposal_type_combox)
-        _login_as_proposal_widget_layout.addWidget(dash_label)
+        _login_as_proposal_widget_layout.addWidget(self.dash_label)
         _login_as_proposal_widget_layout.addWidget(self.proposal_number_ledit)
         _login_as_proposal_widget_layout.addWidget(self.password_label)
         _login_as_proposal_widget_layout.addWidget(self.proposal_password_ledit)
@@ -166,12 +198,14 @@ class ProposalBrick(BaseWidget):
         _login_as_proposal_widget_layout.addWidget(self.login_button)
         _login_as_proposal_widget_layout.setSpacing(2)
         _login_as_proposal_widget_layout.setContentsMargins(0, 0, 0, 0)
-
+    
+    def set_login_as_user_widget_layout(self):
         _login_as_user_widget_layout = qt_import.QHBoxLayout(self.login_as_user_widget)
         _login_as_user_widget_layout.addWidget(self.proposal_combo)
         _login_as_user_widget_layout.setSpacing(2)
         _login_as_user_widget_layout.setContentsMargins(0, 0, 0, 0)
 
+    def set_main_gboxlayout(self):
         _main_gboxlayout = qt_import.QHBoxLayout(self.main_gbox)
         _main_gboxlayout.addWidget(self.message_widget)
         _main_gboxlayout.addWidget(self.login_as_proposal_widget)
@@ -181,7 +215,8 @@ class ProposalBrick(BaseWidget):
         _main_gboxlayout.addWidget(self.user_group_widget)
         _main_gboxlayout.setSpacing(2)
         _main_gboxlayout.setContentsMargins(0, 0, 0, 0)
-
+        
+    def set_main_vlayout(self):
         _main_vlayout = qt_import.QVBoxLayout(self)
         _main_vlayout.addWidget(self.main_gbox)
         _main_vlayout.setSpacing(2)
@@ -339,7 +374,7 @@ class ProposalBrick(BaseWidget):
     # Sets the current session; changes from login mode to logout mode
     def set_proposal(self, proposal, session):
         logging.getLogger("ACCEPTING proposal %s - session is %s" % (str(proposal), str(session)))
-        #HWR.beamline.lims.enable()
+        HWR.beamline.lims.enable()
         HWR.beamline.session.proposal_code = proposal["code"]
         HWR.beamline.session.session_id = session["sessionId"]
         HWR.beamline.session.proposal_id = proposal["proposalId"]
@@ -348,8 +383,8 @@ class ProposalBrick(BaseWidget):
         # Change mode
         if not self.login_as_user:
             self.login_button.hide()
-            # self.login_as_proposal_widget.setDisabled(True)
-            # self.logout_button.show()
+            self.login_as_proposal_widget.setDisabled(True)
+            self.logout_button.show()
 
         # Store info in the brick
         self.proposal = proposal
@@ -360,7 +395,7 @@ class ProposalBrick(BaseWidget):
             logging.getLogger().warning(
                 "Using local login: the data collected won't be stored in the database"
             )
-            #HWR.beamline.lims.disable()
+            HWR.beamline.lims.disable()
             self.loggedIn.emit(False)
         else:
             msg = "Results in ISPyB will be stored under proposal %s%s - '%s'" % (
@@ -597,8 +632,8 @@ class ProposalBrick(BaseWidget):
         impersonate=False,
     ):
         # Get proposal and sessions
-        logging.getLogger("HWR").debug("ProposalBrick: querying ISPyB database...")
-        prop = HWR.beamline.lims.get_proposal(proposal_code, proposal_number)
+        logging.getLogger().info("ProposalBrick: querying ISPyB database...")
+        prop = HWR.beamline.lims.getProposal(proposal_code, proposal_number)
 
         # Check if everything went ok
         prop_ok = True
@@ -628,7 +663,7 @@ class ProposalBrick(BaseWidget):
         beamline_name = HWR.beamline.lims.beamline_name
         proposal = selected_proposal["Proposal"]
 
-        self.show_selected_proposal(proposal)  # local implementation can go here
+        #self.show_selected_proposal(proposal)  # local implementation can go here
 
         # self.proposal_number_ledit.setText(str(proposal['number']))
         # self.password_label.hide()
@@ -697,8 +732,8 @@ class ProposalBrick(BaseWidget):
             new_session_dict["scheduled"] = 0
             new_session_dict["nbShifts"] = 3
             new_session_dict["comments"] = "Session created by MXCuBE"
-            session_manager = HWR.beamline.lims.create_session(new_session_dict)
-            session_id = session_manager.sessions[0].session_id
+            session_id = HWR.beamline.lims.create_session(new_session_dict)
+            #session_id = session_manager.sessions[0].session_id
             new_session_dict["sessionId"] = session_id
 
             todays_session = new_session_dict
