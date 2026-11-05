@@ -856,14 +856,14 @@ class DataCollectTree(qt_import.QWidget):
 
             if HWR.beamline.diffractometer.in_plate_mode:
                 try:
-                    loaded_sample = HWR.beamline.plate_manipulator.getLoadedSample()
-                    loaded_sample_loc = loaded_sample.getCoords()
+                    loaded_sample = HWR.beamline.plate_manipulator.get_loaded_sample()
+                    loaded_sample_loc = loaded_sample.get_coords()
                 except BaseException:
                     pass
             else:
                 try:
-                    loaded_sample = HWR.beamline.sample_changer.getLoadedSample()
-                    loaded_sample_loc = loaded_sample.getCoords()
+                    loaded_sample = HWR.beamline.sample_changer.get_loaded_sample()
+                    loaded_sample_loc = loaded_sample.get_coords()
                 except BaseException:
                     pass
             it = qt_import.QTreeWidgetItemIterator(self.sample_tree_widget)
@@ -991,8 +991,12 @@ class DataCollectTree(qt_import.QWidget):
             elif HWR.beamline.sample_changer is not None:
                 if not HWR.beamline.sample_changer.has_loaded_sample():
                     result = False
-                elif item.get_model().location == HWR.beamline.sample_changer.get_loaded_sample().get_coords():
-                    result = True
+                else:
+                    loaded_sample = HWR.beamline.sample_changer.get_loaded_sample()
+                    if loaded_sample is not None and item.get_model().location == loaded_sample.get_coords():
+                        result = True
+                    else:
+                        result = False
         return result
 
     def collect_items(self, items=[], checked_items=[]):
