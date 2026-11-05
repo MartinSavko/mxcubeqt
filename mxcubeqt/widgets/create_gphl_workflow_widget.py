@@ -218,8 +218,8 @@ class CreateGphlWorkflowWidget(CreateTaskBase):
         wfl.path_template = path_template
         strategy_name = conversion.text_type(self._workflow_cbox.currentText())
         wfl.init_from_task_data(
-            sample,
             {"strategy_name": strategy_name, "prefix": path_template.get_prefix()},
+            sample,
         )
         wfl.set_number(path_template.run_number)
 
