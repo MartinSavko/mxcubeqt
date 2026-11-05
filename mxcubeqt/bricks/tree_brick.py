@@ -756,7 +756,7 @@ class TreeBrick(BaseWidget):
             matrix = sample.get_id() or ""
             basket_index = sample.get_container().get_index()
             sample_index = sample.get_index()
-            sample_name = sample.get_name()
+            sample_name = sample.get_name().strip("-")
             sc_sample_content.append(
                 (matrix, basket_index + 1, sample_index + 1, sample_name)
             )

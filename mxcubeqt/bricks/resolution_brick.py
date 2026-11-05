@@ -57,7 +57,7 @@ class ResolutionBrick(BaseWidget):
 
         self.group_box = qt_import.QGroupBox("Resolution", self)
         current_label = qt_import.QLabel("Current:", self.group_box)
-        current_label.setFixedWidth(75)
+        current_label.setFixedWidth(50)
 
         self.resolution_ledit = qt_import.QLineEdit(self.group_box)
         self.resolution_ledit.setReadOnly(True)
@@ -70,7 +70,7 @@ class ResolutionBrick(BaseWidget):
         self.units_combobox = qt_import.QComboBox(_new_value_widget)
         self.stop_button = qt_import.QPushButton(_new_value_widget)
         self.stop_button.setIcon(icons.load_icon("Stop2"))
-        self.stop_button.setEnabled(False)
+        self.stop_button.setEnabled(True) # was False
         self.stop_button.setFixedWidth(25)
 
         # Layout --------------------------------------------------------------

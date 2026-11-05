@@ -47,7 +47,7 @@ class TransmissionBrick(BaseWidget):
         # Graphic elements ----------------------------------------------------
         self.group_box = qt_import.QGroupBox("Transmission", self)
         current_label = qt_import.QLabel("Current:", self.group_box)
-        current_label.setFixedWidth(75)
+        current_label.setFixedWidth(50)
         self.transmission_ledit = qt_import.QLineEdit(self.group_box)
         self.transmission_ledit.setReadOnly(True)
         set_to_label = qt_import.QLabel("Set to:", self.group_box)

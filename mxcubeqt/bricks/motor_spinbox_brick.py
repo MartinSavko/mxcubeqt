@@ -21,6 +21,7 @@
 import sys
 import math
 import logging
+import enum
 
 from mxcubeqt.utils import icons, colors, qt_import
 from mxcubeqt.base_components import BaseWidget
@@ -368,8 +369,8 @@ class MotorSpinboxBrick(BaseWidget):
     def position_changed(self, position):
         if self.editing:
             return
-
-        if not(position is None or math.isinf(position) or math.isnan(position)):
+        
+        if not(position is None or isinstance(position, enum.Enum) or math.isinf(position) or math.isnan(position)):
             self.position_spinbox.blockSignals(True)
             self.position_slider.blockSignals(True)
             self.position_spinbox.setValue(position)
