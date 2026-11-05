@@ -31,7 +31,7 @@ from logging.handlers import TimedRotatingFileHandler
 import tempfile
 import platform
 from optparse import OptionParser
-from pkg_resources import resource_filename, resource_string
+from importlib import resources
 
 import gevent
 import gevent.monkey
@@ -85,11 +85,14 @@ LOGGING_NAME = ""
 #sys.path.insert(0, MXCUBEQT_ROOT)
 
 #MOCKUP_CONFIG_PATH = os.path.join(MXCUBEQT_ROOT, "example_config.yml")
-MOCKUP_CONFIG_PATH = resource_filename('mxcubeqt', 'configuration/mockup.yml')
+MOCKUP_CONFIG_PATH = str(resources.files('mxcubeqt') / 'configuration' / 'mockup.yml')
 
 path = []
-for p in ['configuration/mockup', 'configuration/mockup/qt']:
-    path.append(resource_filename('mxcubecore', p))
+coredir = resources.files('mxcubecore')
+path = [
+    str(coredir / 'configuration' / 'mockup'),
+    str(coredir / 'configuration' / 'mockup' / 'qt'),
+]
 
 MOCKUP_CORE_CONFIG_PATH = ":".join(path)
 

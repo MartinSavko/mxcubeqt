@@ -92,7 +92,7 @@ class GphlJsonDialog(qt_import.QDialog):
         self.continue_button.clicked.connect(self.continue_button_click)
         self.cancel_button.clicked.connect(self.cancel_button_click)
 
-        self.resize(qt_import.QSize(1200, 578).expandedTo(self.minimumSizeHint()))
+        # self.resize(qt_import.QSize(1200, 578).expandedTo(self.minimumSizeHint()))
 
     def keyPressEvent(self, event: qt_import.QKeyEvent) -> None:
         """Unused, but needed to disable having Qt interpret [Return] as [Continue]
@@ -168,6 +168,10 @@ class GphlJsonDialog(qt_import.QDialog):
         self.parameter_gbox.show()
         params_widget.parametersValidSignal.connect(self.continue_button.setEnabled)
         params_widget.validate_fields()
+        if "indexing_solution" in schema["properties"]:
+            self.resize(qt_import.QSize(300,900).expandedTo(self.minimumSizeHint()))
+        else:
+            self.resize(qt_import.QSize(300, 300).expandedTo(self.minimumSizeHint()))
         self.show()
         self.setEnabled(True)
         self.update()
