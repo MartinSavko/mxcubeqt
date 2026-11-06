@@ -613,7 +613,7 @@ class TreeBrick(BaseWidget):
                 l_sample.lims_location = new_location
                 l_samples[new_location] = l_sample
                 name = l_sample.get_name()
-                l_sample.init_from_sc_sample([new_location])
+                l_sample.init_from_sc_sample(new_location)
                 l_sample.set_name(name)
 
         return barcode_samples, l_samples
