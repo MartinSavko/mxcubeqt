@@ -613,7 +613,7 @@ class TreeBrick(BaseWidget):
                 l_sample.lims_location = new_location
                 l_samples[new_location] = l_sample
                 name = l_sample.get_name()
-                l_sample.init_from_sc_sample([new_location])
+                l_sample.init_from_sc_sample(new_location)
                 l_sample.set_name(name)
 
         return barcode_samples, l_samples
@@ -641,7 +641,15 @@ class TreeBrick(BaseWidget):
                     item_text = "%s-%s" % (sample.proteinAcronym, sample.sampleName)
                     self.sample_changer_widget.sample_combo.addItem(item_text)
             except BaseException:
-                pass
+                if sample.get("containerSampleChangerLocation"):
+                    self.filtered_lims_samples.append(sample)
+                    item_text = ("%s-%s"
+                                 % (
+                                     sample.get("proteinAcronym", ""),
+                                     sample.get("sampleName", "")
+                                 )
+                                 )
+                    self.sample_changer_widget.sample_combo.addItem(item_text)
 
         self.sample_changer_widget.sample_label.setEnabled(True)
         self.sample_changer_widget.sample_combo.setEnabled(True)
